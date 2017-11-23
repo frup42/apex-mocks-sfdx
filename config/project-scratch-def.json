@@ -1,0 +1,7 @@
+{
+	"orgName": "apex-mocks-sfdx",
+	"edition": "Developer",
+	"orgPreferences": {
+		"enabled": ["S1DesktopEnabled"]
+	}
+}
