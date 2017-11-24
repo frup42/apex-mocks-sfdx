@@ -45,7 +45,9 @@ private class AccountsSelectorTest
         Account[] expected = new Account[]{};
 
         // When
+        Test.startTest();
         Account[] actual = AccountsSelector.newInstance().getForNames(names);
+        Test.stopTest();
 
         // Then
         System.assertEquals(expected, actual);
@@ -59,7 +61,9 @@ private class AccountsSelectorTest
         Account[] expected = new Account[]{};
 
         // When
+        Test.startTest();
         Account[] actual = AccountsSelector.newInstance().getForNames(names);
+        Test.stopTest();
 
         // Then
         System.assertEquals(expected, actual);
@@ -73,7 +77,9 @@ private class AccountsSelectorTest
         Account[] expected = new Account[]{};
 
         // When
+        Test.startTest();
         Account[] actual = AccountsSelector.newInstance().getForNames(names);
+        Test.stopTest();
 
         // Then
         System.assertEquals(expected, actual);
@@ -87,7 +93,9 @@ private class AccountsSelectorTest
         Account[] expected = new Account[]{};
 
         // When
+        Test.startTest();
         Account[] actual = AccountsSelector.newInstance().getForNames(names);
+        Test.stopTest();
 
         // Then
         System.assertEquals(expected, actual);
@@ -101,7 +109,9 @@ private class AccountsSelectorTest
         Account[] expected = new Account[]{ EXISTING_ACCOUNTS[0] };
 
         // When
+        Test.startTest();
         Account[] actual = AccountsSelector.newInstance().getForNames(names);
+        Test.stopTest();
 
         // Then
         System.assertEquals(1, actual.size(), 'Unexpected result size: ' + actual);
