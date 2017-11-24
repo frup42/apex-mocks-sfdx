@@ -100,6 +100,7 @@ public class DuplicateAccountBlocker
 
     private static Set<Id> addErrorToDuplicateAccounts(Set<Id> duplicateAccountIds, Map<Id, Account> accounts)
     {
+        Utilities utils = Utilities.newInstance();
         Set<Id> result = new Set<Id>();
 
         for (Id duplicateAccountId : duplicateAccountIds)
@@ -107,7 +108,7 @@ public class DuplicateAccountBlocker
             Account duplicateAccount = accounts.get(duplicateAccountId);
             if (duplicateAccount != null)
             {
-                duplicateAccount.addError('You cannot create an Account with the name "' + duplicateAccount.Name + '", as this would create a duplicate');
+                utils.addError(new Account[]{ duplicateAccount }, 'You cannot create an Account with the name "' + duplicateAccount.Name + '", as this would create a duplicate');
                 result.add(duplicateAccountId);
             }
         }

@@ -216,11 +216,7 @@ private class AccountsTest
 		public Object answer(fflib_InvocationOnMock invocation)
 		{
 			Map<Id, Account> records = (Map<Id, Account>)invocation.getArgument(0);
-
-            for (Account record : records.values())
-            {
-                record.addError('This is my testing error');
-            }
+            Utilities.newInstance().addError(records.values(), 'This is my testing error');
 			
 			return records.keySet();
 		}
