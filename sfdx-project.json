@@ -1,0 +1,15 @@
+{
+	"packageDirectories": [
+		{
+			"path": "force",
+			"default": true
+		},
+		{
+			"path": "fflib-apex-mocks",
+			"default": false
+		}
+	],
+	"namespace": "",
+	"sfdcLoginUrl": "https://login.salesforce.com",
+	"sourceApiVersion": "41.0"
+}
