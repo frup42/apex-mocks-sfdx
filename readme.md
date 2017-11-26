@@ -59,7 +59,7 @@ If we were working with Java, we could pull ApexMocks in from Maven.<br>
 If we were working with Node.js, we could pull ApexMocks in from NPM.<br>
 If we were working with... well, you get the picture.
 
-We don't have a sophisticated package manager for pulling in versioned, unmanaged code.
+We don't have a sophisticated package manager for pulling in semantically versioned unmanaged code.
 So we're going to manually copy the files from fflib-apex-mocks, as and when we need them.
 At the time of writing, these are the files as of the [HEAD of master in financialforcedev/fflib-apex-mocks](https://github.com/financialforcedev/fflib-apex-mocks/commit/af89f78a355c4513428f263e96592b03ccf3ee1e).
 
@@ -85,7 +85,7 @@ Look at our sfdx-project.json. Notice that force is the default package director
 ],
 ```
 
-All ApexMocks classes are prefixed with fflib_. This prevents filename collissions when it gets integrated into our sample app code.
+All ApexMocks classes are prefixed with fflib_. This prevents filename collisions when it gets integrated into our sample app code.
 For example, if both ApexMocks and our app tried to define a file called Answer, there can only be one Answer class in the scratch org so one of the versions would be lost.
 
 Let's take advantage of this... Look at our .gitignore. What this means is: you can make a change to the ApexMocks classes in your scratch org, but you can't check them in. Changes to ApexMocks should be made in the ApexMocks repo for everyone to enjoy - then copied here in the standard way.
@@ -101,6 +101,8 @@ Great code is divided into small, single-purpose, reusable, modular classes. Eac
 
 When we unit test each class, we want to *isolate its dependencies*. We do this by replacing the real dependencies with mocks. A mock is a "Test Double" - a lean object which emulates the one it is standing in for. It has no logic of its own, just the behaviour we define within the context of our unit test.
 
+This means we can build more *expressive* tests. The name of the test method will tell us the required behavior from the unit under test. And we'll explicitly outline the desired behavior in the dependencies (which are not under test).
+
 So how do we create a mock? In both cases, we need an instance of fflib_ApexMocks(), which acts as our Stub Provider.
 
 #### 1. Creating Mocks with fflib_ApexMocks.mock(..) (Internally Uses the Stub API)
@@ -111,9 +113,9 @@ fflib_ApexMocks mocks = new fflib_ApexMocks();
 AccountsSelector mockSelector = (AccountsSelector)mocks.mock(AccountsSelector.class);
 ```
 
-We have created a mock: `mockSelector`. We can use stub behavior on to the mock, and we can verify how the mock was used (if at all) during the test.
+We have created a mock: `mockSelector`. We can stub the mock to behave in a specific way. We can verify how the mock was used during the test, if at all. Notice how we needed to explicitly cast it to an AccountsSelector: `(AccountsSelector)mocks.mock(...)`?
 
-What is the mockSelector? If you inspect its type in debug logs, you'll find it's actually a `AccountsSelector__sfdc_ApexStub` class. You won't find this class in source control anywhere! This class was dynamically created at runtime, and it extends AccountsSelector.
+What is the mockSelector? If you dump it out in debug logs, you'll find it's actually a `AccountsSelector__sfdc_ApexStub` class. You won't find this class in source control anywhere! This class was dynamically created at runtime, and it extends AccountsSelector. 
 
 So it inherits all of the AccountsSelector methods, and as far as the code is concerned, *the mockSelector is just a plain old AccountsSelector*. But this ain't no ordinary selector - any time you invoke a method on this mock, it will be handed straight over to the mock framework to register the invocation and invoke your predefined behavior.
 
@@ -200,12 +202,12 @@ We'll use `AccountsSelector` as an example again. `AccountsSelector` cannot be e
 You can now commit the Mocks file into source control, but if any of the interfaces inside are changed, you would need to regenerate it. Alternatively, you could gitignore the Mocks file, and create a build process that regenerates it before deployment.
 
 ### Dependency Injection
-Remember this from earlier?
 > Unsurprisingly, ApexMocks is all about mocks.<br>
 > ...<br>
 > When we unit test each class, we want to *isolate its dependencies*. We do this by replacing the real dependencies with mocks.<br>
 > A mock is a "Test Double" - a lean object which emulates the one it is standing in for.
 
+Remember this from earlier?
 Mocks *stand in* for the real dependencies. We need each class to use the standard dependencies when the app is running, but the mock dependencies in the corresponding unit tests.
 
 So we need to **inject** different **dependencies**, depending on the **context** in which the code is running. This is called Context Dependency Injection - rather sensible if you ask me!
@@ -405,3 +407,18 @@ public class AnswerAddError implements fflib_Answer
 	}
 }
 ```
+
+## Unit Tests vs System Tests
+Question:
+> Why did we go to so much effort to test each class in isolation?<br>
+> Wouldn't it have been just as valuable (perhaps moreso) to write tests that actually insert/update Accounts and check the whole codepath from the outside-in, to check it really fulfils our business requirements?
+
+Well, yes! You're talking about system tests. In the best case scenario, you'd have both system and unit tests!
+System tests serve a different purpose from unit tests; they ensure the application is actually behaving the way we need it to.
+
+However, imagine this is the beginnings of an enterprise level application.
+We will want to reuse as much code as possible, and be able to combine the classes in different ways to solve different problems.
+Here is where true unit tests with ApexMocks really come into their own.
+We have rigorously tested all of the behaviors of each class, and we can be confident they work correctly when reused in other codepaths.
+
+System tests test a greater slice of the system, and are therefore more expensive to create, and modify when we add new functionality later. So you should naturally find that there are far more unit tests than system tests, and far more system tests than manual tests, because of the increasing cost of each test type.
