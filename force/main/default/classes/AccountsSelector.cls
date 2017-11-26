@@ -25,9 +25,11 @@
  */
 public class AccountsSelector
 {
+    // Instance variable for dependency injection - see README for more details.
     @TestVisible
     private static AccountsSelector instance = null;
 
+    // newInstance helper for dependency injection - see README for more details.
     public static AccountsSelector newInstance()
     {
         if (instance == null)
@@ -38,6 +40,7 @@ public class AccountsSelector
         return instance;
     }
 
+    // Retrieve all the Accounts that have the specified names
     public Account[] getForNames(Set<String> names)
     {
         // Check the requested names are sensible
@@ -48,6 +51,7 @@ public class AccountsSelector
         return names.isEmpty() ? new Account[]{} : [SELECT Id, Name FROM Account WHERE Name IN :names];
     }
 
+    // Sanitize the input - we don't want a null Set or null/blank elements in the Set
     private static Set<String> sanitize(Set<String> input)
     {
         if (input == null)
@@ -63,6 +67,7 @@ public class AccountsSelector
             input.remove(null);
         }
         
+        // Return the sanitized result
         return input;
     }
 }

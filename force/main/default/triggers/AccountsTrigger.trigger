@@ -24,5 +24,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 trigger AccountsTrigger on Account (after insert, after update) {
+	// We can create Apex class instances in unit tests, giving us more control over dependencies.
+	// So delegate all trigger handling to the Accounts class.
 	Accounts.newInstance().handleTrigger();
 }
